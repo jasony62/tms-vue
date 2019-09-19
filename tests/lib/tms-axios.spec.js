@@ -62,15 +62,71 @@ describe('tms-axios', function() {
             expect(err.msg).toBe('服务端业务逻辑错误')
         })
     })
+    it("重发请求-重发", () => {
+        let rule = Vue.TmsAxios.newInterceptorRule({
+            onRetryAttempt: (res, rule) => {
+                return Promise.resolve(true)
+            }
+        })
+        let tmsAxiso = Vue.TmsAxios({ rules: [rule] })
+        const mock = new MockAdapter(tmsAxiso)
+        mock.onGet('/api/any').replyOnce(200, { code: 10001, msg: '服务端业务逻辑错误' })
+        mock.onGet('/api/any').replyOnce(200, { code: 0, result: 'ok' })
+        return tmsAxiso.get('/api/any').then(res => {
+            expect(res.data).toMatchObject({ code: 0, result: 'ok' })
+        })
+    })
+    it("重发请求-不重发，收到原始错误信息", () => {
+        let rule = Vue.TmsAxios.newInterceptorRule({
+            onRetryAttempt: (res, rule) => {
+                return Promise.resolve(false)
+            }
+        })
+        let tmsAxiso = Vue.TmsAxios({ rules: [rule] })
+        const mock = new MockAdapter(tmsAxiso)
+        mock.onGet('/api/any').replyOnce(200, { code: 10001, msg: '服务端业务逻辑错误' })
+        return tmsAxiso.get('/api/any').catch(err => {
+            expect(err).toMatchObject({ code: 10001, msg: '服务端业务逻辑错误' })
+        })
+    })
+    it("重发请求-重发，处理重发请求异常", () => {
+        let rule = Vue.TmsAxios.newInterceptorRule({
+            onRetryAttempt: (res, rule) => {
+                return Promise.reject('重发失败')
+            }
+        })
+        let tmsAxiso = Vue.TmsAxios({ rules: [rule] })
+        const mock = new MockAdapter(tmsAxiso)
+        mock.onGet('/api/any').replyOnce(200, { code: 10001, msg: '服务端业务逻辑错误' })
+        return tmsAxiso.get('/api/any').catch(err => {
+            expect(err).toBe('重发失败')
+        })
+    })
+    it("重发请求-重发，重发请求失败", () => {
+        let mockOnRetryAttempt = jest.fn().mockReturnValue(Promise.resolve(true))
+        let rule = Vue.TmsAxios.newInterceptorRule({
+            onRetryAttempt: mockOnRetryAttempt
+        })
+        let tmsAxiso = Vue.TmsAxios({ rules: [rule] })
+        const mock = new MockAdapter(tmsAxiso)
+        mock.onGet('/api/any').replyOnce(200, { code: 10001, msg: '第1次失败' })
+        mock.onGet('/api/any').replyOnce(200, { code: 10002, msg: '第2次失败' })
+        return tmsAxiso.get('/api/any').catch(err => {
+            // 只允许进行1次重发
+            expect(mockOnRetryAttempt.mock.calls).toHaveLength(1)
+            expect(mockOnRetryAttempt.mock.calls[0][0].config.headers['TmsAxios-Retry']).toBe(1)
+            expect(err).toMatchObject({ code: 10002, msg: '第2次失败' })
+        })
+    })
     it("发出请求后，服务端响应access_token不可用，获得新access_token后，重发请求", () => {
         let rule = Vue.TmsAxios.newInterceptorRule({
             requestParams: new Map([
                 ['access_token', 'invalidaccesstoken']
             ]),
-            onResponseFail: rule => {
+            onRetryAttempt: (res, rule) => {
                 return new Promise(resolve => {
                     rule.requestParams.set('access_token', 'new_access_token')
-                    resolve(200)
+                    resolve(true)
                 })
             }
         })
