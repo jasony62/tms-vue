@@ -1,0 +1,80 @@
+{
+    "name": "tms-vue",
+    "version": "0.0.1",
+    "description": "基于VUE的前端开发通用基础组件，用于简化开发代码。",
+    "main": "lib/index.js",
+    "files": [
+        "lib"
+    ],
+    "scripts": {
+        "test": "vue-cli-service test:unit"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/jasony62/tms-vue.git"
+    },
+    "keywords": [
+        "VUE"
+    ],
+    "author": "jasony62",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/jasony62/tms-vue/issues"
+    },
+    "homepage": "https://github.com/jasony62/tms-vue#readme",
+    "dependencies": {
+        "axios": "^0.19.0",
+        "vue": "^2.6.10"
+    },
+    "devDependencies": {
+        "@vue/cli-plugin-babel": "^3.8.0",
+        "@vue/cli-plugin-eslint": "^3.8.0",
+        "@vue/cli-plugin-unit-jest": "^3.8.0",
+        "@vue/cli-service": "^3.8.0",
+        "@vue/test-utils": "1.0.0-beta.29",
+        "axios-mock-adapter": "^1.17.0",
+        "babel-core": "7.0.0-bridge.0",
+        "babel-eslint": "^10.0.1",
+        "babel-jest": "^23.6.0",
+        "babel-plugin-import": "^1.12.0",
+        "less": "^3.10.3",
+        "less-loader": "^5.0.0",
+        "node-sass": "^4.12.0",
+        "sass-loader": "^7.1.0",
+        "sinon": "^7.3.2",
+        "vue-template-compiler": "^2.6.10"
+    },
+    "jest": {
+        "moduleFileExtensions": [
+            "js",
+            "json",
+            "vue",
+            "jsx"
+        ],
+        "transform": {
+            ".*\\.(vue)$": "vue-jest",
+            "^.+\\.js$": "<rootDir>/node_modules/babel-jest",
+            "^.+\\.vue$": "vue-jest",
+            ".+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$": "jest-transform-stub",
+            "^.+\\.jsx?$": "babel-jest"
+        },
+        "restoreMocks": true,
+        "transformIgnorePatterns": [
+            "/node_modules/"
+        ],
+        "moduleNameMapper": {
+            "^@/(.*)$": "<rootDir>/src/$1"
+        },
+        "snapshotSerializers": [
+            "jest-serializer-vue"
+        ],
+        "testMatch": [
+            "**/tests/**/*.spec.(js|jsx|ts|tsx)"
+        ],
+        "testURL": "http://localhost/",
+        "watchPlugins": [
+            "jest-watch-typeahead/filename",
+            "jest-watch-typeahead/testname"
+        ]
+    }
+}
