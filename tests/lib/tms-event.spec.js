@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { TmsEventPlugin } from '../../lib'
+import { TmsEventPlugin } from '@/lib'
 
 describe('tms-event', function() {
     it('安装，发送，接收', done => {

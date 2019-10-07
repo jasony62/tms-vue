@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { TmsAxiosPlugin, TmsAxios } from '../../lib'
+import { TmsAxiosPlugin, TmsAxios } from '@/lib'
 import MockAdapter from 'axios-mock-adapter'
 
 describe('tms-axios', function() {
