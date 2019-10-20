@@ -35,9 +35,9 @@ this.$tmsOn('hello', () => {})
 
 ```javascript
 import Vue from 'vue'
-import { TmsAxios } from 'tms-vue'
+import { TmsAxiosPlugin } from 'tms-vue'
 
-Vue.use(TmsAxios)
+Vue.use(TmsAxiosPlugin)
 // 注意不需要new，返回的不是Class，是工厂方法
 let name = 'tms-axios-1'
 let tmsAxios = Vue.TmsAxios({ name })

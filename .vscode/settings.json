@@ -3,9 +3,6 @@
   "[html]": {
     "editor.defaultFormatter": "HookyQR.beautify"
   },
-  "[json]": {
-    "editor.defaultFormatter": "HookyQR.beautify"
-  },
   "beautify.config": {
     "brace_style": "collapse,preserve-inline"
   },
@@ -22,5 +19,6 @@
   },
   "vim.autoindent": false,
   "terminal.integrated.rendererType": "dom",
-  "editor.tabSize": 2
+  "editor.tabSize": 2,
+  "editor.detectIndentation": false
 }
