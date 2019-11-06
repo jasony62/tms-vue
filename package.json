@@ -1,6 +1,6 @@
 {
   "name": "tms-vue",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "基于VUE的前端开发通用基础组件，用于简化开发代码。",
   "main": "lib/index.js",
   "files": [

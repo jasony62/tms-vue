@@ -8,9 +8,7 @@
   },
   "eslint.enable": true,
   "eslint.workingDirectories": ["./"],
-  "prettier.tabWidth": 2,
   "prettier.printWidth": 120,
-  "prettier.singleQuote": true,
   "vetur.format.defaultFormatterOptions": {
     "prettier": {
       "semi": false,

@@ -31,7 +31,7 @@ this.$tmsOn('hello', () => {})
 
 支持通过拦截器添加请求参数，处理业务逻辑错误。
 
-创建实例
+## 创建实例
 
 ```javascript
 import Vue from 'vue'
@@ -58,7 +58,7 @@ let name = 'tms-axios-1'
 let tmsAxios = TmsAxios.ins(name)
 ```
 
-指定拦截规则，给请求添加参数。
+## 指定拦截规则，给请求添加参数。
 
 ```javascript
 let rule = Vue.TmsAxios.newInterceptorRule({
@@ -67,7 +67,7 @@ let rule = Vue.TmsAxios.newInterceptorRule({
 let tmsAxios = TmsAxios.ins({ rules: [rule] })
 ```
 
-指定拦截规则，重发请求。
+## 指定拦截规则，重发请求。
 
 ```javascript
 let rule = Vue.TmsAxios.newInterceptorRule({
@@ -84,6 +84,22 @@ let tmsAxiso = Vue.TmsAxios({ rules: [rule] })
 如果有多个重发请求规则，只要任意一个发生异常（reject），就不进行重发；如果有任意一个需要重发（返回 resolve(true）)，就进行重发。
 
 只允许重发一次。
+
+## 指定拦截规则，业务逻辑错误处理（返回结果中 code 不等于 0）
+
+```javascript
+let rule = Vue.TmsAxios.newInterceptorRule({
+  onResultFault: (res, rule) => {
+    return new Promise(resolve => {
+      console.log('发生业务逻辑错误', res.data)
+      resolve(true)
+    })
+  }
+})
+let tmsAxiso = Vue.TmsAxios({ rules: [rule] })
+```
+
+业务逻辑错误拦截器处理返回结果后，tms-vue 仍然会继续将执行 Promise.reject(res.data)，调用方应该使用 catch 进行接收。
 
 使用方法参考测试用例：tms-axios.spec.js
 
