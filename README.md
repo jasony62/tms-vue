@@ -62,7 +62,16 @@ let tmsAxios = TmsAxios.ins(name)
 
 ```javascript
 let rule = Vue.TmsAxios.newInterceptorRule({
-  requestParams: new Map([['access_token', 'invalidaccesstoken']])
+  requestParams: new Map([['access_token', 'validaccesstoken']])
+})
+let tmsAxios = TmsAxios.ins({ rules: [rule] })
+```
+
+## 指定拦截规则，给请求添加头。
+
+```javascript
+let rule = Vue.TmsAxios.newInterceptorRule({
+  requestHeaders: new Map([['Authorization', 'Bearer valid-jwt']])
 })
 let tmsAxios = TmsAxios.ins({ rules: [rule] })
 ```
