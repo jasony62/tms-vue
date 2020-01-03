@@ -67,6 +67,19 @@ let rule = Vue.TmsAxios.newInterceptorRule({
 let tmsAxios = TmsAxios.ins({ rules: [rule] })
 ```
 
+参数可以通过函数提供，并且支持放回 promise，例如：
+
+```javascript
+requestParams: new Map([
+  [
+    'access_token',
+    function() {
+      return 'validaccesstoken'
+    }
+  ]
+])
+```
+
 ## 指定拦截规则，给请求添加头
 
 ```javascript
@@ -74,6 +87,19 @@ let rule = Vue.TmsAxios.newInterceptorRule({
   requestHeaders: new Map([['Authorization', 'Bearer valid-jwt']])
 })
 let tmsAxios = TmsAxios.ins({ rules: [rule] })
+```
+
+请求头参数可以通过函数提供，并且支持放回 promise，例如：
+
+```javascript
+requestHeaders: new Map([
+  [
+    'Authorization',
+    function() {
+      return 'Bearer valid-jwt'
+    }
+  ]
+])
 ```
 
 ## 指定拦截规则，重发请求

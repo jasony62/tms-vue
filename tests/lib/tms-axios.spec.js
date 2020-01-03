@@ -54,9 +54,57 @@ describe('tms-axios', function() {
       })
     })
   })
+  it('通过函数添加access_token参数', () => {
+    let rule = Vue.TmsAxios.newInterceptorRule({
+      requestParams: new Map([
+        [
+          'access_token',
+          function() {
+            return 'validaccesstoken'
+          }
+        ]
+      ])
+    })
+    let tmsAxios = Vue.TmsAxios({ rules: [rule] })
+    const mock = new MockAdapter(tmsAxios)
+    mock.onGet('/api/any').reply(200, {
+      code: 0,
+      result: 'hello'
+    })
+    return tmsAxios.get('/api/any').then(rsp => {
+      expect(rsp.data).toMatchObject({ code: 0, result: 'hello' })
+      expect(rsp.config.params).toMatchObject({
+        access_token: 'validaccesstoken'
+      })
+    })
+  })
   it('添加Authorization头', () => {
     let rule = Vue.TmsAxios.newInterceptorRule({
       requestHeaders: new Map([['Authorization', 'Bearer valid-jwt']])
+    })
+    let tmsAxios = Vue.TmsAxios({ rules: [rule] })
+    const mock = new MockAdapter(tmsAxios)
+    mock.onGet('/api/any').reply(200, {
+      code: 0,
+      result: 'hello'
+    })
+    return tmsAxios.get('/api/any').then(rsp => {
+      expect(rsp.data).toMatchObject({ code: 0, result: 'hello' })
+      expect(rsp.config.headers).toMatchObject({
+        Authorization: 'Bearer valid-jwt'
+      })
+    })
+  })
+  it('通过函数添加Authorization头', () => {
+    let rule = Vue.TmsAxios.newInterceptorRule({
+      requestHeaders: new Map([
+        [
+          'Authorization',
+          function() {
+            return 'Bearer valid-jwt'
+          }
+        ]
+      ])
     })
     let tmsAxios = Vue.TmsAxios({ rules: [rule] })
     const mock = new MockAdapter(tmsAxios)
