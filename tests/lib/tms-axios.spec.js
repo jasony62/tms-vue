@@ -2,6 +2,8 @@ import Vue from 'vue'
 import { TmsAxiosPlugin, TmsAxios } from '@/lib'
 import MockAdapter from 'axios-mock-adapter'
 
+Vue.config.productionTip = false
+
 describe('tms-axios', function() {
   Vue.use(TmsAxiosPlugin)
   it('创建实例', () => {

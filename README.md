@@ -140,19 +140,6 @@ let tmsAxiso = Vue.TmsAxios({ rules: [rule] })
 
 发起请求的接口和 axios 一致，参考：https://github.com/axios/axios
 
-## 指定拦截规则，取消请求
-
-```javascript
-let rule = Vue.TmsAxios.newInterceptorRule({
-  shouldCancel: () => {
-    return Promise.resolve('取消请求原因')
-  }
-})
-let tmsAxios = Vue.TmsAxios({ rules: [rule] })
-```
-
-取消请求后，axios 会抛出`Cancel`异常。
-
 ## 指定连接规则，响应阶段失败处理
 
 ```javascript

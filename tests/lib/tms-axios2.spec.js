@@ -67,37 +67,4 @@ describe('tms-axios', function() {
 
     return Promise.all([p1, p2, p3])
   })
-  it('在拦截器中设置取消条件', done => {
-    let rule = Vue.TmsAxios.newInterceptorRule({
-      shouldCancel: () => {
-        return Promise.resolve('cancel this request')
-      }
-    })
-    let tmsAxios = Vue.TmsAxios({ rules: [rule] })
-    tmsAxios.get(slowurl).catch(err => {
-      expect(err.message).toBe('cancel this request')
-      done()
-    })
-  })
-  it('在拦截器中设置取消条件-指定处理方式', done => {
-    let testmsg = 'cancel request for test'
-    let rule1, rule2
-    rule1 = Vue.TmsAxios.newInterceptorRule({
-      shouldCancel: () => testmsg
-    })
-
-    let mockOnResponseRejected = jest
-      .fn()
-      .mockReturnValue(Promise.reject({ message: testmsg }))
-    // 取消请求会以异常的报出，通过拦截器进行处理
-    rule2 = Vue.TmsAxios.newInterceptorRule({
-      onResponseRejected: mockOnResponseRejected
-    })
-    let tmsAxios = Vue.TmsAxios({ rules: [rule1, rule2] })
-    tmsAxios.get(slowurl).catch(err => {
-      expect(mockOnResponseRejected.mock.calls).toHaveLength(1)
-      expect(err.message).toBe(testmsg)
-      done()
-    })
-  })
 })
