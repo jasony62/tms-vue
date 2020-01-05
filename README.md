@@ -58,16 +58,51 @@ let name = 'tms-axios-1'
 let tmsAxios = TmsAxios.ins(name)
 ```
 
-## 指定拦截规则，给请求添加参数。
+## 指定拦截规则，给请求添加参数
 
 ```javascript
 let rule = Vue.TmsAxios.newInterceptorRule({
-  requestParams: new Map([['access_token', 'invalidaccesstoken']])
+  requestParams: new Map([['access_token', 'validaccesstoken']])
 })
 let tmsAxios = TmsAxios.ins({ rules: [rule] })
 ```
 
-## 指定拦截规则，重发请求。
+参数可以通过函数提供，并且支持放回 promise，例如：
+
+```javascript
+requestParams: new Map([
+  [
+    'access_token',
+    function() {
+      return 'validaccesstoken'
+    }
+  ]
+])
+```
+
+## 指定拦截规则，给请求添加头
+
+```javascript
+let rule = Vue.TmsAxios.newInterceptorRule({
+  requestHeaders: new Map([['Authorization', 'Bearer valid-jwt']])
+})
+let tmsAxios = TmsAxios.ins({ rules: [rule] })
+```
+
+请求头参数可以通过函数提供，并且支持放回 promise，例如：
+
+```javascript
+requestHeaders: new Map([
+  [
+    'Authorization',
+    function() {
+      return 'Bearer valid-jwt'
+    }
+  ]
+])
+```
+
+## 指定拦截规则，重发请求
 
 ```javascript
 let rule = Vue.TmsAxios.newInterceptorRule({
@@ -104,6 +139,19 @@ let tmsAxiso = Vue.TmsAxios({ rules: [rule] })
 使用方法参考测试用例：tms-axios.spec.js
 
 发起请求的接口和 axios 一致，参考：https://github.com/axios/axios
+
+## 指定连接规则，响应阶段失败处理
+
+```javascript
+rule = Vue.TmsAxios.newInterceptorRule({
+  onResponseRejected: (err, rule) => {
+    // 修复错误，或者转发错误
+  }
+})
+let tmsAxios = Vue.TmsAxios({ rules: [rule] })
+```
+
+响应失败处理不是对业务错误的处理（参考：onResultFault）,是在响应阶段对发生的异常的处理，例如：希望对调用请求过程中发生的异常做统一处理（用统一的弹出框显示），那么就可以在这里实现。但是，需要注意这是 promise 调用链中的一环，调用仍然会继续，只是插入了一个处理环节。
 
 # 执行批量任务类（Batch）
 
