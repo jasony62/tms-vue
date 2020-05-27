@@ -224,3 +224,26 @@ class BatchArg {
 # 运行时加载 vue lib（runtime-lib）
 
 运行时加载 vue 库模块
+
+生成组件的命令。
+
+> npx vue-cli-service build --target lib --formats umd,umd-min --dest ./dist/lib/my-comp --name index ./src/components/my-comp.vue
+
+```html
+<component :is="comp" v-bind="transferProps"></component>
+```
+
+```js
+import Vue from 'vue'
+import { tmsImportLib } from 'tms-vue'
+
+const compOptions = await tmsImportLib(url, options)
+const CompClass = Vue.extend(compOptions)
+```
+
+| 名称               |                    |
+| ------------------ | ------------------ |
+| url                | 组件的位置（唯一） |
+| options            | 设置对象           |
+| options.name       | 组件名称           |
+| options.includeCss | 是否加载 css 文件  |
