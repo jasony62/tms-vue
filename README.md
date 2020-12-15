@@ -40,7 +40,9 @@ import { TmsAxiosPlugin } from 'tms-vue'
 Vue.use(TmsAxiosPlugin)
 // 注意不需要new，返回的不是Class，是工厂方法
 let name = 'tms-axios-1'
-let tmsAxios = Vue.TmsAxios({ name })
+let rules = [] // 见下面的说明
+let config = {} // 参考axios的config
+let tmsAxios = Vue.TmsAxios({ name, rules, config })
 ```
 
 在 Vue 的组件中使用之前创建实例。
@@ -62,7 +64,7 @@ let tmsAxios = TmsAxios.ins(name)
 
 ```javascript
 let rule = Vue.TmsAxios.newInterceptorRule({
-  requestParams: new Map([['access_token', 'validaccesstoken']])
+  requestParams: new Map([['access_token', 'validaccesstoken']]),
 })
 let tmsAxios = TmsAxios.ins({ rules: [rule] })
 ```
@@ -73,10 +75,10 @@ let tmsAxios = TmsAxios.ins({ rules: [rule] })
 requestParams: new Map([
   [
     'access_token',
-    function() {
+    function () {
       return 'validaccesstoken'
-    }
-  ]
+    },
+  ],
 ])
 ```
 
@@ -84,7 +86,7 @@ requestParams: new Map([
 
 ```javascript
 let rule = Vue.TmsAxios.newInterceptorRule({
-  requestHeaders: new Map([['Authorization', 'Bearer valid-jwt']])
+  requestHeaders: new Map([['Authorization', 'Bearer valid-jwt']]),
 })
 let tmsAxios = TmsAxios.ins({ rules: [rule] })
 ```
@@ -95,10 +97,10 @@ let tmsAxios = TmsAxios.ins({ rules: [rule] })
 requestHeaders: new Map([
   [
     'Authorization',
-    function() {
+    function () {
       return 'Bearer valid-jwt'
-    }
-  ]
+    },
+  ],
 ])
 ```
 
@@ -107,11 +109,11 @@ requestHeaders: new Map([
 ```javascript
 let rule = Vue.TmsAxios.newInterceptorRule({
   onRetryAttempt: (res, rule) => {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       rule.requestParams.set('access_token', 'new_access_token')
       resolve(true)
     })
-  }
+  },
 })
 let tmsAxiso = Vue.TmsAxios({ rules: [rule] })
 ```
@@ -125,11 +127,11 @@ let tmsAxiso = Vue.TmsAxios({ rules: [rule] })
 ```javascript
 let rule = Vue.TmsAxios.newInterceptorRule({
   onResultFault: (res, rule) => {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       console.log('发生业务逻辑错误', res.data)
       resolve(true)
     })
-  }
+  },
 })
 let tmsAxiso = Vue.TmsAxios({ rules: [rule] })
 ```
@@ -146,7 +148,7 @@ let tmsAxiso = Vue.TmsAxios({ rules: [rule] })
 rule = Vue.TmsAxios.newInterceptorRule({
   onResponseRejected: (err, rule) => {
     // 修复错误，或者转发错误
-  }
+  },
 })
 let tmsAxios = Vue.TmsAxios({ rules: [rule] })
 ```
@@ -157,16 +159,29 @@ let tmsAxios = Vue.TmsAxios({ rules: [rule] })
 
 管理需要按批次执行的任务，例如：分页访问数据。
 
+```js
+import { Batch } from 'tms-vue'
+
+const batch = new Batch((arg1, ..., argN, batchArg) => {}, arg1, ..., argN)
+batch.size = 10
+batch.next().then(({result,done})=>{...})
+```
+
+除了给要批次执行的方法传入固定的参数外，还会添加一个类型为`BatchArg`的示例记录批次执行状态（page 和 size）。
+
 ## 属性
 
-| 属性       | 说明                                          | 类型     |
-| ---------- | --------------------------------------------- | -------- |
-| action     | 需要按批次执行的方法                          | function |
-| actionArgs | 按批次执行方法的参数                          | array    |
-| page       | 批量任务的页号                                | number   |
-| size       | 每一批的任务数量                              | number   |
-| total      | 全部任务数量                                  | number   |
-| execPage   | 将要执行的批量任务页号，执行成功后赋值给 page | number   |
+| 属性       | 说明                                                                | 类型     | 默认值 |
+| ---------- | ------------------------------------------------------------------- | -------- | ------ |
+| action     | 需要按批次执行的方法                                                | function |        |
+| actionArgs | 按批次执行方法的参数                                                | array    |        |
+| page       | 批量任务的页号                                                      | number   | 0      |
+| size       | 每一批的任务数量                                                    | number   | 1      |
+| total      | 全部任务数量                                                        | number   |        |
+| execPage   | 将要执行的批量任务页号，执行成功后赋值给 page                       | number   | 0      |
+| tail       | 已完成的最 size 条任务的编号（只读，任务编号从 1 开始，page\*size） | number   |        |
+| progress   | 当前进度，tail/total，只读                                          | string   |        |
+| pages      | 总的页数                                                            | number   |        |
 
 ## 方法
 
@@ -179,7 +194,13 @@ let tmsAxios = Vue.TmsAxios({ rules: [rule] })
 | fnAction | 需要批量执行的方法，返回值必须为 Promise。 | function |
 | argN     | 执行批量方法需要的参数。                   | any      |
 
-如果 fnAction 的执行需要依赖特定的上下文，应该在传入前进行绑定。请参考单元测试中的用户。
+如果 fnAction 的执行需要依赖特定的上下文，应该在传入前进行绑定。请参考单元测试中的用例。参数数量应该和方法需要的参数数量一致。
+
+### exec
+
+执行当前批次。该方法调用传入的批量方法。
+
+返回当前批次执行的结果，和整体是否执行完成。
 
 ### next
 
@@ -193,6 +214,18 @@ let tmsAxios = Vue.TmsAxios({ rules: [rule] })
 | ---------- | ---------- | ------ |
 | targetPage | 批次编号。 | number |
 
-### exec
+### startBatch
 
-执行当前批次。该方法调用传入的批量方法，并在参数列表
+创建并执行 1 次批量任务。
+
+| 参数                  | 说明                        | 类型     | 默认值 |
+| --------------------- | --------------------------- | -------- | ------ |
+| action                | 需要按批次执行的方法        | function |        |
+| argsArray             | 按批次执行方法的参数        | array    |        |
+| options               | 批次任务参数                | object   |        |
+| options.size          | 每个批次包含任务数          | number   | 1      |
+| options.firstCallback | 第 1 个批次执行完的回调函数 | function |        |
+
+# lock-promise
+
+# router-history
