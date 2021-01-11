@@ -185,9 +185,11 @@ batch.next().then(({result,done})=>{...})
 
 ## 方法
 
-### constructor
-
 > let batch = new Batch(fnAction, ..., argN)
+> batch.size = 12
+> let result = await batch.next()
+
+### constructor
 
 | 参数     | 说明                                       | 类型     |
 | -------- | ------------------------------------------ | -------- |
@@ -205,6 +207,28 @@ batch.next().then(({result,done})=>{...})
 ### next
 
 执行下一个批次。
+
+调用 fnAction 方法，传递构造时的参数 argN，并且最后传入一个 类型位 BatchArg 参数。
+
+```
+class BatchArg {
+  constructor(page, size) {
+    this.page = page
+    this.size = size
+  }
+  toString() {
+    return `${this.page},${this.size}`
+  }
+}
+```
+
+返回结果是一个对象，包含 fnAction 执行的结果和是否任务已经全部完成。
+
+```
+{result, done}
+```
+
+如果返回结果中包含 total，自动记录到 batch 实例中。
 
 ### goto
 
@@ -228,4 +252,31 @@ batch.next().then(({result,done})=>{...})
 
 # lock-promise
 
-# router-history
+执行当前批次。该方法调用传入的批量方法，并在参数列表
+
+# 运行时加载 vue lib（runtime-lib）
+
+运行时加载 vue 库模块
+
+生成组件的命令。
+
+> npx vue-cli-service build --target lib --formats umd,umd-min --dest ./dist/lib/my-comp --name index ./src/components/my-comp.vue
+
+```html
+<component :is="comp" v-bind="transferProps"></component>
+```
+
+```js
+import Vue from 'vue'
+import { tmsImportLib } from 'tms-vue'
+
+const compOptions = await tmsImportLib(url, options)
+const CompClass = Vue.extend(compOptions)
+```
+
+| 名称               |                    |
+| ------------------ | ------------------ |
+| url                | 组件的位置（唯一） |
+| options            | 设置对象           |
+| options.name       | 组件名称           |
+| options.includeCss | 是否加载 css 文件  |
